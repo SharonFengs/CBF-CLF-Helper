@@ -48,7 +48,9 @@ function [u, slack, B, V, feas, comp_time] = ctrlCbfClfQp(obj, x, u_ref, with_sl
     if with_slack
         % CLF and CBF constraints.
         A = [LgV, -1;
-        -LgB, 0];
+        -LgB(1,:), 0;
+        -LgB(2,:), 0;
+        -LgB(3,:), 0];
         b = [-LfV - obj.params.clf.rate * V;
             LfB + obj.params.cbf.rate * B];                
         % Add input constraints if u_max or u_min exists.
