@@ -17,7 +17,7 @@ function initSys(obj, symbolic_x, symbolic_f, symbolic_g, symbolic_cbf, symbolic
     x = symbolic_x;
     % Setting state and input dimension.
     obj.xdim = size(x, 1);
-    obj.udim = size(g_,2);
+    obj.udim = size(g_, 2);
     % Setting f and g (dynamics)
     obj.f = matlabFunction(f_, 'vars', {x});
     obj.g = matlabFunction(g_, 'vars', {x});            
@@ -25,19 +25,12 @@ function initSys(obj, symbolic_x, symbolic_f, symbolic_g, symbolic_cbf, symbolic
     % Obtaining Lie derivatives of CBF.
     if ~isempty(symbolic_cbf)
         dcbf = simplify(jacobian(symbolic_cbf, symbolic_x));
-        
         lf_cbf_ = dcbf * f_;
-        %lg_cbf_ = dcbf * g_;  
-        d_lf_cbf = simplify(jacobian(lf_cbf_, symbolic_x))
-        f_
-        g_
-        lflf_cbf_ = d_lf_cbf * f_
-        lglf_cbf_ = d_lf_cbf * g_
+        lg_cbf_ = dcbf * g_;        
         obj.cbf = matlabFunction(symbolic_cbf, 'vars', {x});
         obj.lf_cbf = matlabFunction(lf_cbf_, 'vars', {x});
         % TODO: add sanity check of relative degree.
-        obj.lglf_cbf = matlabFunction(lglf_cbf_, 'vars', {x});
-        obj.lflf_cbf = matlabFunction(lflf_cbf_, 'vars', {x});
+        obj.lg_cbf = matlabFunction(lg_cbf_, 'vars', {x});
     end
 
     % Obtaining Lie derivatives of CLF.    
@@ -45,7 +38,6 @@ function initSys(obj, symbolic_x, symbolic_f, symbolic_g, symbolic_cbf, symbolic
         dclf = simplify(jacobian(symbolic_clf, symbolic_x));
         lf_clf_ = dclf * f_;
         lg_clf_ = dclf * g_;
-        
         obj.clf = matlabFunction(symbolic_clf, 'vars', {x});                       
         obj.lf_clf = matlabFunction(lf_clf_, 'vars', {x});
         % TODO: add sanity check of relative degree.

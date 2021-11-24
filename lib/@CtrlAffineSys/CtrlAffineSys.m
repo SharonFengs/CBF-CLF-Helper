@@ -20,6 +20,8 @@ classdef CtrlAffineSys < handle
         cbf 
         % Lie derivative (wrt f) of the CBF as a function handle
         lf_cbf 
+        lflf_cbf
+        lglf_cbf
         % Lie derivative (wrt g) of the CBF as a function handle
         lg_cbf 
         % Control Lyapunov Function as a function handle

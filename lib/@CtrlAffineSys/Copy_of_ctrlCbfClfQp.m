@@ -39,31 +39,20 @@ function [u, slack, B, V, feas, comp_time] = ctrlCbfClfQp(obj, x, u_ref, with_sl
     V = obj.clf(x);
     LfV = obj.lf_clf(x);
     LgV = obj.lg_clf(x);
-    
+
     B = obj.cbf(x);
     LfB = obj.lf_cbf(x);
-%    LgB = obj.lg_cbf(x);
-    Lg_LfB = obj.lglf_cbf(x);
-    Lf_LfB = obj.lflf_cbf(x);
-%     B = obj.cbf(x);
-%     LfB = obj.lf_cbf(x);
-%     LgB = obj.lg_cbf(x);
+    LgB = obj.lg_cbf(x);
         
     %% Constraints: A[u; slack] <= b
     if with_slack
         % CLF and CBF constraints.
-%         A = [LgV, -1;
-%         -LgB(1,:), 0;
-%         -LgB(2,:), 0;
-%         -LgB(3,:), 0];
-%         b = [-LfV - obj.params.clf.rate * V;
-%             LfB + obj.params.cbf.rate * B]; 
-
-    %% Constraints : A * u <= b
-    % CBF constraint.
-    A = [LgV, -1;-Lg_LfB 0];
-    b = [-LfV - obj.params.clf.rate * V;Lf_LfB + obj.params.gain * [B;LfB]];
-
+        A = [LgV, -1;
+        -LgB(1,:), 0;
+        -LgB(2,:), 0;
+        -LgB(3,:), 0];
+        b = [-LfV - obj.params.clf.rate * V;
+            LfB + obj.params.cbf.rate * B];                
         % Add input constraints if u_max or u_min exists.
         if isfield(obj.params, 'u_max')
             A = [A; eye(obj.udim), zeros(obj.udim, 1);];

@@ -1,24 +1,30 @@
 close all;
 clear all;
+clc;
 % Init state.
 x0 = [0; 0; 0; 0];
 
 % Target position
-params.p_d = [10; 10];
+params.p_d = [13; 10];
 % wall location
 params.x_o = 12;
-params.y_o = 15;
-% obstacle.
-params.p_o = [3,3];
-params.r_o = 1; 
+% params.y_o = 15;
+% % obstacle.
+% params.p_o = [3,3];
+% params.r_o = 1; 
 
-dt = 0.05;
-sim_t = 50;
+dt = 0.01;
+sim_t = 5;
+F=[0 1;0 0];
+G=[0;1];
+C=[0 1];
+p=[-2 -3];
+gain_c=place(F,G,p);
 
-params.cbf_gamma0 = 1;
+params.gain = gain_c;
 
-params.u_max =100;
-params.u_min  = -100;
+params.u_max =5;
+params.u_min  = -5;
 
 params.clf.rate = 5;
 params.cbf.rate = 1;
@@ -29,6 +35,7 @@ params.weight.input = 100;
 dynsys = Test2D(params);
 
 odeFun = @dynsys.dynamics;
+% controller = @dynsys.ctrlECbf;
 controller = @dynsys.ctrlCbfClfQp;
 odeSolver = @ode45;
 
@@ -70,8 +77,8 @@ hold on
 plot(x0(1),x0(3),'o','linewidth',2);
 plot(params.p_d(1),params.p_d(2),'x','linewidth',2);
 xline(params.x_o, 'r');
-yline(params.y_o, 'r');
-draw_circle(params.p_o, params.r_o);
+% yline(params.y_o, 'r');
+% draw_circle(params.p_o, params.r_o);
 xlim([0 20]);
 ylim([0 20]);
 hold off;
@@ -81,6 +88,20 @@ hold on
 plot(ts(2:end),us(:,2));
 xlabel('t')
 ylabel('u')
+
+figure(3)
+plot(ts,xs(:,2));
+hold on
+plot(ts,xs(:,4));
+xlabel('t')
+ylabel('v')
+
+figure(4)
+plot(ts,xs(:,1));
+hold on
+plot(ts,xs(:,3));
+xlabel('t')
+ylabel('x')
 
 function h = draw_circle(center,r)
 th = 0:pi/50:2*pi;
